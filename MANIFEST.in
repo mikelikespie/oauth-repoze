@@ -1,0 +1,3 @@
+include oauthwhat/config/deployment.ini_tmpl
+recursive-include oauthwhat/public *
+recursive-include oauthwhat/templates *
