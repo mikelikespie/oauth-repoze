@@ -89,6 +89,7 @@ class OAuthIdentificationPlugin(object):
                 res.headers.add(a,v)
             res.status = 302
             res.location = self.logged_out_url
+            logger and logger.debug('Logging out and redirecting to %s' % self.logged_out_url)
             environ['repoze.who.application'] = res
             return {}
 
@@ -167,10 +168,14 @@ class OAuthIdentificationPlugin(object):
         request = Request(environ)
         logger = environ.get('repoze.who.logger')
         
-        # now we have an oauth from the user in the request 
-        logger and logger.debug('starting oauth request for : %s ' % environ['repoze.whoplugins.oauth.oauth_request_token'])
+        #if it's the first time we see this, we want to get the page
+        if 'repoze.whoplugins.oauth.oauth_request_token' not in environ:
+            return self._redirect_to_loginform()
 
+        # now we have an oauth from the user in the request 
         oauth_consumer = self.get_consumer(environ['repoze.whoplugins.oauth.oauth_request_token'])
+
+        logger and logger.debug('starting oauth request for : %s ' % environ['repoze.whoplugins.oauth.oauth_request_token'])
 
         return_to = request.path_url # we return to this URL here
         logger and logger.debug('setting return_to URL to : %s ' %return_to)
@@ -207,9 +212,9 @@ class OAuthIdentificationPlugin(object):
         
         """
         logger = environ.get('repoze.who.logger')
-        if identity.has_key("repoze.who.plugins.oauth.oauth_token"):
-                logger and logger.info('authenticated : %s ' %identity['repoze.who.plugins.oauth.oauth_token'])
-                return identity.get('repoze.who.plugins.oauth.oauth_token')
+        if identity.has_key("repoze.who.plugins.oauth.specifier"):
+                logger and logger.info('authenticated : %s ' %identity['repoze.who.plugins.oauth.specifier'])
+                return identity.get('repoze.who.plugins.oauth.specifier')
 
 
     def __repr__(self):

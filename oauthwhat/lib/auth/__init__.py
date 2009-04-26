@@ -33,7 +33,8 @@ def add_auth(app, config):
                                         login_handler_path = '/login',
                                         logout_handler_path = '/logout',
                                         login_form_url = '/login_form',
-                                        logged_in_url = '/main',
+                                        logged_in_url = '/',
+                                        logged_out_url = '/',
                                         came_from_field = 'came_from',
                                         rememberer_name='auth_tkt')
 
