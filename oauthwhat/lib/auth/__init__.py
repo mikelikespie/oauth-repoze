@@ -6,8 +6,8 @@ from repoze.what.middleware import setup_auth
 from repoze.who.plugins.auth_tkt import AuthTktCookiePlugin
 
 from oauthwhat.lib.oauth import OAuthTwitterConsumer
-from oauthwhat.lib.repoze.who.oauth.classifiers import oauth_challenge_decider
-from oauthwhat.lib.repoze.who.oauth.identification import OAuthIdentificationPlugin
+from oauthwhat.lib.auth.oauth.classifiers import oauth_challenge_decider
+from oauthwhat.lib.auth.oauth.identification import OAuthIdentificationPlugin
 
 
 def add_auth(app, config):
