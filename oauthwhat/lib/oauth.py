@@ -1,3 +1,5 @@
+import logging
+
 import simplejson
 import urllib
 import time
@@ -10,6 +12,7 @@ import urllib2
 import hmac
 from oauthwhat.model import OAuthToken, Session
 
+log = logging.getLogger(__name__)
 
 class OAuthConsumer(object):
     request_token_url = None
@@ -67,7 +70,7 @@ class OAuthConsumer(object):
         except IOError, e:
             raise self.UnauthorizedToken("Has not been authorized yet")
 
-        print token_info
+        log.debug(token_info)
         dat = dict(token.split('=') for token in token_info.split('&'))
         token, token_secret = dat['oauth_token'], dat['oauth_token_secret']
 
@@ -75,17 +78,17 @@ class OAuthConsumer(object):
 
         self.token = Session.query(OAuthToken).filter(OAuthToken.oauth_token == token).first()
         
-        print "Toooken"
+        log.debug("Toooken")
 
         if self.token is None:
             self.token = OAuthToken(token, token_secret, authorized = True) 
             Session.add(self.token)
 
-        print "getting specifier..."
+        log.debug("getting specifier...")
 
         self.token.specifier = self.get_specifier()
 
-        print "Specifier = %s" % self.token.specifier
+        log.debug("Specifier = %s" % self.token.specifier)
         Session.commit()
         raise Exception()
 
@@ -124,14 +127,14 @@ class OAuthConsumer(object):
 
     def get_get(self, url, **args):
         data = self._gen_signed_data(url, method="GET", **args)
-        print url, data
+        log.debug(url, data)
         uurl = "%s?%s" % (url, urllib.urlencode(data))
-        print uurl
+        log.debug(uurl)
         return self.opener.open(uurl)
 
     def get_post(self, url, **args):
         data = self._gen_signed_data(url, method="POST", **args)
-        print url, data
+        log.debug(url, data)
         return self.opener.open(url, urllib.urlencode(data))
 
     def get_post_lines(self, url, **args):
