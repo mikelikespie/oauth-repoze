@@ -15,6 +15,8 @@ def init_model(engine):
     meta.Session.configure(bind=engine)
     meta.engine = engine
 
+from oauthwhat.model.meta import Session
+from oauthwhat.model.oauth import OAuthToken
 
 ## Non-reflected tables may be defined and mapped at module level
 #foo_table = sa.Table("Foo", meta.metadata,
