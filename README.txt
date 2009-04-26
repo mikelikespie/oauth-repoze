@@ -1,5 +1,15 @@
-This file is for you to describe the oauth-what application. Typically
-you would include information such as the information below:
+This is a demo of OAuth with pylons using repoze.what/who middleware
+
+It's not polished by any means, but should be a good starting point
+
+The interesting oauth tidbits are in::
+
+	oauthwhat.lib.auth
+	oauthwhat.lib
+
+As well as a little in
+
+	oauth.model
 
 Installation and Setup
 ======================
