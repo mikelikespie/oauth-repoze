@@ -3,7 +3,6 @@ from repoze.who.interfaces import IChallengeDecider
 
 
 def oauth_challenge_decider(environ, status, headers):
-    environ['repoze.who.logger'].debug('in challenge_decider')
     # we do the default if it's a 401, probably we show a form then
     if status.startswith('401 '):
         return True

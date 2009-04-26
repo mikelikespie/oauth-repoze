@@ -80,7 +80,7 @@ class OAuthIdentificationPlugin(object):
         """
 
         request = Request(environ)
-        
+        logger = environ.get('repoze.who.logger')
         # first test for logout as we then don't need the rest
         if request.path == self.logout_handler_path:
             res = Response()
@@ -100,10 +100,8 @@ class OAuthIdentificationPlugin(object):
         # when the oauth provider redirects the user back.
         if request.path == self.login_handler_path:
 
-        # in the case we are coming from the login form we should have 
-        # an oauth in here the user entered
             oauth_request_token = request.params.get("oauth_token", None)
-            environ['repoze.who.logger'].debug('checking oauth results for : %s ' %oauth_request_token)
+            logger and logger.debug('checking oauth results for : %s ' %oauth_request_token)
             
             # this part now is for the case when the oauth provider redirects
             # the user back. We should find some oauth specific fields in the request.
@@ -115,7 +113,7 @@ class OAuthIdentificationPlugin(object):
                 if not consumer.token.authorized:
                     try:
                         consumer.exchange_access_token()
-                        environ['repoze.who.logger'].info('oauth request successful for : %s ' %oauth_request_token)
+                        logger and logger.info('oauth request successful for : %s ' %oauth_request_token)
                     except self.oauth_consumer.AlreadyAuthorized:
                         pass
                     except Exception, exception:
@@ -138,7 +136,6 @@ class OAuthIdentificationPlugin(object):
     # IIdentifier
     def remember(self, environ, identity):
         """remember the oauth in the session we have anyway"""
-        environ['repoze.who.logger'].debug("REMEMBERING OMG")
         rememberer = self._get_rememberer(environ)
         r = rememberer.remember(environ, identity)
         return r
@@ -168,34 +165,21 @@ class OAuthIdentificationPlugin(object):
         """
 
         request = Request(environ)
+        logger = environ.get('repoze.who.logger')
         
         # now we have an oauth from the user in the request 
-        environ['repoze.who.logger'].debug('starting oauth request for : %s ' % environ['repoze.whoplugins.oauth.oauth_request_token'])
+        logger and logger.debug('starting oauth request for : %s ' % environ['repoze.whoplugins.oauth.oauth_request_token'])
 
-
-
-        #try:
-        # we create a new Consumer and start the discovery process for the URL given
-        # in the library oauth_request is called auth_req btw.
         oauth_consumer = self.get_consumer(environ['repoze.whoplugins.oauth.oauth_request_token'])
 
-           
-        # not sure this can still happen but we are making sure.
-        # should actually been handled by the DiscoveryFailure exception above
-#        if oauth_consumer.token is None or oauth_consumer.token.authroized == False
-#            environ[self.error_field] = 'OAuth should have token and authroized by now'
-#            environ['repoze.who.logger'].info('OOauth should have token and authroized by now')
-#            return self._redirect_to_loginform(environ)
-
         return_to = request.path_url # we return to this URL here
-        environ['repoze.who.logger'].debug('setting return_to URL to : %s ' %return_to)
+        logger and logger.debug('setting return_to URL to : %s ' %return_to)
 
         redirect_url = oauth_consumer.get_auth_url(return_to=return_to) 
-        # # , immediate=False)
         res = Response()
         res.status = 302
         res.location = redirect_url
-        environ['repoze.who.logger'].debug('redirecting to : %s ' %redirect_url)
+        logger and logger.debug('redirecting to : %s ' % redirect_url)
 
         # now it's redirecting and might come back via the identify() method
         # from the oauth provider once the user logged in there.
@@ -222,8 +206,9 @@ class OAuthIdentificationPlugin(object):
         This means for you to simply implement something similar to this. 
         
         """
+        logger = environ.get('repoze.who.logger')
         if identity.has_key("repoze.who.plugins.oauth.oauth_token"):
-                environ['repoze.who.logger'].info('authenticated : %s ' %identity['repoze.who.plugins.oauth.oauth_token'])
+                logger and logger.info('authenticated : %s ' %identity['repoze.who.plugins.oauth.oauth_token'])
                 return identity.get('repoze.who.plugins.oauth.oauth_token')
 
 
