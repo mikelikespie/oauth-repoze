@@ -1,6 +1,7 @@
 import logging
 
 from oauthwhat.lib.base import BaseController, render
+from oauthwhat.lib.oauth import OAuthTwitterConsumer
 from repoze.what.predicates import not_anonymous
 from repoze.what.plugins.pylonshq import ActionProtector
 
@@ -16,7 +17,8 @@ class DemoController(BaseController):
         # Return a rendered template
         #return render('/demo.mako')
         # or, return a response
-        c.userid = request.environ['repoze.who.identity']['repoze.who.userid']
+        consumer = OAuthTwitterConsumer(request.environ['repoze.who.identity']['repoze.who.userid'])
+        c.userid = consumer.token.specifier
         return render('/logged-in.html')
 
     def login_form(self):

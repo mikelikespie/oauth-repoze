@@ -212,9 +212,9 @@ class OAuthIdentificationPlugin(object):
         
         """
         logger = environ.get('repoze.who.logger')
-        if identity.has_key("repoze.who.plugins.oauth.specifier"):
-                logger and logger.info('authenticated : %s ' %identity['repoze.who.plugins.oauth.specifier'])
-                return identity.get('repoze.who.plugins.oauth.specifier')
+        if identity.has_key("repoze.who.plugins.oauth.oauth_token"):
+                logger and logger.info('authenticated : %s ' %identity['repoze.who.plugins.oauth.oauth_token'])
+                return identity.get('repoze.who.plugins.oauth.oauth_token')
 
 
     def __repr__(self):
